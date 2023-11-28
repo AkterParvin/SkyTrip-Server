@@ -37,6 +37,7 @@ async function run() {
         const toursCollection = client.db('skyTripDB').collection('tours');
         const wishlistCollection = client.db('skyTripDB').collection('wishlist');
         const bookingCollection = client.db('skyTripDB').collection('bookings');
+        const storiesCollection = client.db('skyTripDB').collection('stories');
 
 
 
@@ -90,12 +91,12 @@ async function run() {
         app.patch("/users/admin/:id", async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
-            const updateDoc = {
+            const updatedDoc = {
                 $set: {
                     role: "admin"
                 }
             };
-            const result = await usersCollection.updateOne(filter, updateDoc);
+            const result = await usersCollection.updateOne(filter, updatedDoc);
             res.send(result);
         })
         app.patch("/users/guide/:id", async (req, res) => {
@@ -141,24 +142,26 @@ async function run() {
         })
 
         // booking related api 
+        // app.get('/bookings', async (req, res) => {
+        //     // console.log("Token owner info:", req.user);
+        //     // if (req.user.email !== req.query.email) {
+        //     //     return res.status(403).send({ message: 'unauthorized access' })
+        //     // }
+        //     const result = await bookingCollection.find().toArray();
+        //     res.send(result);
+        // });
         app.get('/bookings', async (req, res) => {
-            // console.log("Token owner info:", req.user);
-            // if (req.user.email !== req.query.email) {
-            //     return res.status(403).send({ message: 'unauthorized access' })
-            // }
-            const result = await bookingCollection.find().toArray();
-            res.send(result);
-        });
-        app.get('/mybookings', async (req, res) => {
-            let query = {};
-            if (req.query.email) {
-                query = { email: req.query.email }
-            }
+            const email = req.query.email;
+            const query = { email: email };
             const result = await bookingCollection.find(query).toArray();
             res.send(result);
 
         })
-
+ 
+        app.get("/bookings", async (req, res) => {
+            const result = await bookingCollection.find().toArray();
+            res.send(result); 
+        })
         // app.get('/pendingservices', async (req, res) => {
         //     console.log("Token owner info:", req.user);
         //     let query = {};
@@ -176,12 +179,12 @@ async function run() {
             res.send(result);
         })
 
-        // app.delete('/bookings/:id', async (req, res) => {
-        //     const id = req.params.id;
-        //     const query = { _id: new ObjectId(id) };
-        //     const result = await bookingCollection.deleteOne(query);
-        //     res.send(result);
-        // });
+        app.delete('/bookings/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await bookingCollection.deleteOne(query);
+            res.send(result);
+        });
 
         // app.patch('/bookings/:id', async (req, res) => {
         //     const id = req.params.id;
@@ -197,6 +200,31 @@ async function run() {
         //     res.send(result);
         // })
 
+        // story related api 
+        app.get("/stories", async (req, res) => {
+            const result = await storiesCollection.find().toArray();
+            res.send(result); 
+        })
+        app.get("/stories", async (req, res) => {
+            let query = {};
+            if (req.query.email) {
+                query = { email: req.query.email }
+            }
+            const result = await bookingCollection.find(query).toArray();
+            res.send(result);
+ 
+        })
+        app.post("/stories", async (req, res) => {
+            const stories = req.body;
+            const result = await storiesCollection.insertOne(stories);
+            res.send(result);
+        });
+        app.delete('/stories/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await storiesCollection.deleteOne(query);
+            res.send(result);
+        });
 
 
 
