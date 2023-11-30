@@ -86,10 +86,18 @@ async function run() {
             const result = await toursCollection.find().toArray();
             res.send(result);
         });
+
         app.get("/tours/:id", async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
             const result = await toursCollection.findOne(query);
+            res.send(result);
+        });
+
+        app.post('/tours', async (req, res) => {
+            const tours = req.body;
+            console.log(tours);
+            const result = await toursCollection.insertOne(tours);
             res.send(result);
         })
 
@@ -101,7 +109,7 @@ async function run() {
         });
 
         // find admin or guide with id query 
-        app.get("/users/role/:email",verifyToken,async (req, res) => {
+        app.get("/users/role/:email",async (req, res) => {
             const email = req.params.email;
             // if (email !== req.decoded.email) {
             //     return res.status(403).send({ message: "forbidden access" });
@@ -287,12 +295,10 @@ async function run() {
             const result = await storiesCollection.find().toArray();
             res.send(result);
         })
-        app.get("/stories", async (req, res) => {
-            let query = {};
-            if (req.query.email) {
-                query = { email: req.query.email }
-            }
-            const result = await bookingCollection.find(query).toArray();
+        app.get("/stories/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await storiesCollection.findOne(query);
             res.send(result);
 
         })
